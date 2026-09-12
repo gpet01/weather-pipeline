@@ -4,3 +4,4 @@ __pycache__/
 gcp-key.json
 .env
 weather_log.csv
+.DS_Store
