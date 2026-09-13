@@ -12,12 +12,12 @@ OMW_ENDPOINT = "https://api.openweathermap.org/data/2.5/forecast"
 API_KEY = os.getenv("API_KEY")
 MY_LAT = 40.511478
 MY_LON = 21.679102
-CSV_FILE = "weather_log.csv"
 
-PROJECT_ID = "secrets-416917"
-DATASET_ID = "weather_data"
-TABLE_ID = "forecasts"
-CSV_FILE = "weather_log.csv"
+
+PROJECT_ID = os.getenv("PROJECT_ID")
+DATASET_ID = os.getenv("DATASET_ID")
+TABLE_ID = os.getenv("TABLE_ID")
+CSV_FILE = os.getenv("CSV_FILE")
 
 def fetch_weather():
     parameters = {
