@@ -24,7 +24,9 @@ def weather_data():
     query = f"""
         SELECT fetched_at, forecast_time, temp, humidity, wind_speed, description
         FROM `{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}`
+        WHERE CAST(forecast_time AS DATETIME) >= CURRENT_DATETIME()
         ORDER BY forecast_time ASC
+        LIMIT 8
     """
     results = list(client.query(query).result())
 

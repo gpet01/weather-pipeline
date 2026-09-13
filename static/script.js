@@ -3,10 +3,26 @@ const COLOR_COOL = "#4fa8d8";
 const COLOR_MUTED = "#7f92a3";
 const COLOR_GRID = "#24323e";
 
-function formatTime(isoLikeString) {
-    // BigQuery returns "YYYY-MM-DD HH:MM:SS" — show just the hour for chart labels.
-    const parts = isoLikeString.split(" ");
-    return parts.length > 1 ? parts[1].slice(0, 5) : isoLikeString;
+function formatTime(bigQueryDatetimeString) {
+    const isoUtc = bigQueryDatetimeString.replace(" ", "T") + "Z";
+    const date = new Date(isoUtc);
+    return date.toLocaleTimeString("el-GR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Europe/Athens",
+    });
+}
+
+function formatDateTime(bigQueryDatetimeString) {
+    const isoUtc = bigQueryDatetimeString.replace(" ", "T") + "Z";
+    const date = new Date(isoUtc);
+    return date.toLocaleString("el-GR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Europe/Athens",
+    });
 }
 
 function baseChartOptions(unitSuffix) {
@@ -41,7 +57,7 @@ fetch("/api/weather-data")
             document.getElementById("currentDescription").textContent = data.current.description;
             document.getElementById("currentHumidity").textContent = `${data.current.humidity}%`;
             document.getElementById("currentWind").textContent = `${data.current.wind_speed} m/s`;
-            document.getElementById("updatedLabel").textContent = `Πρόβλεψη για ${data.current.forecast_time}`;
+            document.getElementById("updatedLabel").textContent = `Πρόβλεψη για ${formatDateTime(data.current.forecast_time)}`;
         }
 
         new Chart(document.getElementById("tempChart"), {
