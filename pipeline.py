@@ -24,7 +24,7 @@ def fetch_weather():
         "lat": MY_LAT,
         "lon": MY_LON,
         "appid": API_KEY,
-        "cnt": 4,
+        "cnt": 8,
         "units": "metric"
     }
 
@@ -45,11 +45,35 @@ def build_rows(weather_data):
         })
     return rows
 
+def get_existing_forecast_times(client, table_ref, candidate_times):
+    if not candidate_times:
+        return set()
+    times_list = ", ".join(f'"{t}"' for t in candidate_times)
+    query = f"""
+        SELECT DISTINCT forecast_time
+        FROM `{table_ref}`
+        WHERE forecast_time IN ({times_list})
+    """
+    try:
+        results = client.query(query).result()
+        return {row.forecast_time for row in results}
+    except Exception:
+        return set()
+
 def load_to_bigquery(rows):
     client = bigquery.Client(project=PROJECT_ID)
     table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
-    df = pd.DataFrame(rows)
 
+    candidate_times = [ r["forecast_time"] for r in rows]
+    existing_times = get_existing_forecast_times(client, table_ref, candidate_times)
+
+    new_rows = [r for r in rows if r["forecast_time"] not in existing_times]
+
+    if not new_rows:
+        print("No new forecast slows to insert, all are already stored.")
+        return
+
+    df = pd.DataFrame(new_rows)
     job_config = bigquery.LoadJobConfig(
         write_disposition="WRITE_APPEND",
         schema=[
