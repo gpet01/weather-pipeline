@@ -14,9 +14,9 @@ MY_LAT = 40.511478
 MY_LON = 21.679102
 
 
-PROJECT_ID = os.getenv("PROJECT_ID")
-DATASET_ID = os.getenv("DATASET_ID")
-TABLE_ID = os.getenv("TABLE_ID")
+PROJECT_ID = "secrets-416917"
+DATASET_ID = "weather_data"
+TABLE_ID = "forecasts"
 CSV_FILE = os.getenv("CSV_FILE")
 
 def fetch_weather():
