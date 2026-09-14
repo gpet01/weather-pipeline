@@ -20,17 +20,20 @@ TABLE_ID = "forecasts"
 CSV_FILE = os.getenv("CSV_FILE")
 
 def fetch_weather():
-    parameters = {
-        "lat": MY_LAT,
-        "lon": MY_LON,
-        "appid": API_KEY,
-        "cnt": 8,
-        "units": "metric"
-    }
-
-    response = requests.get(url=OMW_ENDPOINT, params=parameters)
-    response.raise_for_status()
-    return response.json()
+    try:
+        parameters = {
+            "lat": MY_LAT,
+            "lon": MY_LON,
+            "appid": API_KEY,
+            "cnt": 8,
+            "units": "metric"
+        }
+        response = requests.get(url=OMW_ENDPOINT, params=parameters, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch weather data: {e}")
+        raise
 
 def build_rows(weather_data):
     rows = []

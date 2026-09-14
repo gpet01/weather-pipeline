@@ -48,7 +48,10 @@ function baseChartOptions(unitSuffix) {
 }
 
 fetch("/api/weather-data")
-    .then((res) => res.json())
+    .then((res) => {
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        return res.json();
+    })
     .then((data) => {
         const labels = data.labels.map(formatTime);
 
@@ -89,4 +92,9 @@ fetch("/api/weather-data")
             },
             options: baseChartOptions("%"),
         });
+    })
+    .catch((error) =>{
+        document.getElementById("currentDescription").textContent = 
+            "Δεν ήταν δυνατή η φόρτωση δεδομένων καιρού.";
+        console.error("Weather data fetch failed:", error);
     });

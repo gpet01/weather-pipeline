@@ -20,15 +20,19 @@ def home():
 
 @app.route("/api/weather-data")
 def weather_data():
-    client = bigquery.Client(project=PROJECT_ID)
-    query = f"""
-        SELECT fetched_at, forecast_time, temp, humidity, wind_speed, description
-        FROM `{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}`
-        WHERE CAST(forecast_time AS DATETIME) >= CURRENT_DATETIME()
-        ORDER BY forecast_time ASC
-        LIMIT 8
-    """
-    results = list(client.query(query).result())
+    try:
+        client = bigquery.Client(project=PROJECT_ID)
+        query = f"""
+            SELECT fetched_at, forecast_time, temp, humidity, wind_speed, description
+            FROM `{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}`
+            WHERE CAST(forecast_time AS DATETIME) >= CURRENT_DATETIME()
+            ORDER BY forecast_time ASC
+            LIMIT 8
+        """
+        results = list(client.query(query).result())
+    except Exception as e:
+        print(f"BigQuery query failed: {e}")
+        return jsonify({"error": "Failed to fetch weather data"}), 500
 
     data = {
         "labels": [],
